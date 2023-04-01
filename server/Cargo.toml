@@ -1,0 +1,12 @@
+[package]
+name = "server"
+version = "0.1.0"
+edition = "2021"
+
+[[test]]
+name = "unit_tests"
+path = "tests/*.rs"
+
+[dependencies]
+redis = "0.22.3"
+cassandra-cpp = "2.0.0"
