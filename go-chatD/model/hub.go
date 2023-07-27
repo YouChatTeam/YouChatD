@@ -3,8 +3,8 @@ package model
 import (
 	"fmt"
 
+	"github.com/bwmarrin/snowflake"
 	"github.com/go-redis/redis"
-	"github.com/google/uuid"
 )
 
 // Hub maintains the set of active clients and broadcasts messages to the
@@ -37,6 +37,11 @@ func NewHub(redisClient *redis.Client) *Hub {
 }
 
 func (h *Hub) Run() {
+	node, err := snowflake.NewNode(1)
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	for {
 		select {
 		case client := <-h.register:
@@ -49,8 +54,7 @@ func (h *Hub) Run() {
 			}
 		case message := <-h.broadcast:
 			// write message to redis
-			messageId := uuid.New().String()
-
+			messageId := node.Generate().String()
 			err := h.redisClient.Set(messageId, message, 0).Err()
 			if err != nil {
 				fmt.Println(err)
